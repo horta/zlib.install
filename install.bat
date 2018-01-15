@@ -6,16 +6,7 @@ set FILE=zlib-%VERSION%.zip
 set DIR=zlib-%VERSION%
 set URL=https://zlib.net/zlib%VERSION:.=%.zip
 
-echo [0/6] Library(zlib==%VERSION%)
-
-:: Ancient Windows don't support TLS 1.1 and 1.2, so we fall back to insecure download.
-set Version=
-for /f "skip=1" %%v in ('wmic os get version') do if not defined Version set Version=%%v
-for /f "delims=. tokens=1-3" %%a in ("%Version%") do (
-  set Version.Major=%%a
-  set Version.Minor=%%b
-  set Version.Build=%%c
-)
+echo [0/5] Library(zlib==%VERSION%)
 
 SET ORIGIN=%cd%
 call :joinpath "%ORIGIN%" "install.log"
@@ -27,18 +18,18 @@ rd /S /Q %DIR% >nul 2>&1
 del /Q %LOG_FILE% ! >nul 2>&1
 copy /y nul %LOG_FILE% >nul 2>&1
 
-echo|set /p="[1/6] Downloading... "
+echo|set /p="[1/5] Downloading... "
 echo Fetching %URL% >>%LOG_FILE% 2>&1
 powershell -Command "(New-Object Net.WebClient).DownloadFile('%URL%', '%FILE%')" >>%LOG_FILE% 2>&1
 if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
-echo|set /p="[2/6] Extracting... "
-powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('%FILE%', '.'); }"
+echo|set /p="[2/5] Extracting... "
+powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('%FILE%', '.'); }" >>%LOG_FILE% 2>&1
 if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
 cd %DIR%
 
-echo|set /p="[3/6] Fixing CMakeLists.txt... "
+echo|set /p="[3/5] Fixing CMakeLists.txt... "
 set OLDSTR=RUNTIME DESTINATION ""\${INSTALL_BIN_DIR}\""
 set NEWSTR=RUNTIME DESTINATION ""bin\""
 call :search_replace "%OLDSTR%" "%NEWSTR%"
@@ -58,17 +49,12 @@ if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo 
 
 mkdir build && cd build
 
-echo|set /p="[4/6] Configuring... "
-cmake .. -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%programfiles%\zlib" >>%LOG_FILE% 2>&1
+echo|set /p="[4/5] Configuring... "
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%programfiles%\zlib" >>%LOG_FILE% 2>&1
 if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
-echo|set /p="[5/6] Compiling... "
-nmake >>%LOG_FILE% 2>&1
-if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
-
-echo|set /p="[6/6] Installing... "
-nmake install >>%LOG_FILE% 2>&1
-set PATH=%PATH%;%programfiles%\zlib\bin
+echo|set /p="[5/5] Compiling and installing... "
+cmake --build . --config Release --target install >>%LOG_FILE% 2>&1
 if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
 cd %ORIGIN% >nul 2>&1
