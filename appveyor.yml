@@ -1,3 +1,5 @@
+buid: off
+
 notifications:
   - provider: Email
     on_build_success: false
