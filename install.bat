@@ -55,6 +55,7 @@ if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo 
 
 echo|set /p="[5/5] Compiling and installing... "
 cmake --build . --config Release --target install >>%LOG_FILE% 2>&1
+type %LOG_FILE%
 if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
 cd %ORIGIN% >nul 2>&1
