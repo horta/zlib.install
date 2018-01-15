@@ -1,0 +1,22 @@
+notifications:
+  - provider: Email
+    on_build_success: false
+    on_build_failure: true
+    on_build_status_changed: false
+
+environment:
+    matrix:
+      - PRJ_GEN: "Visual Studio 10 2010 Win64"
+        BDIR: msvc2010
+      - PRJ_GEN: "Visual Studio 11 2012 Win64"
+        BDIR: msvc2012
+      - PRJ_GEN: "Visual Studio 12 2013 Win64"
+        BDIR: msvc2013
+      - PRJ_GEN: "Visual Studio 14 2015 Win64"
+        BDIR: msvc2015
+
+build_script:
+    - mkdir build && cd build
+    - set URL=https://gist.github.com/horta/18a6bda81f254d6a9f8f61e82101b66b/raw/
+    - powershell -Command "(New-Object Net.WebClient).DownloadFile('%URL%', 'install-zlib.bat')"
+    - install.bat
