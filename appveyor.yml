@@ -1,4 +1,4 @@
-buid: off
+build: off
 
 notifications:
   - provider: Email
