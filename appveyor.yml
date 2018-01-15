@@ -20,8 +20,10 @@ build_script:
     - set URL=https://raw.githubusercontent.com/horta/zlib.install/master/install.bat
     - powershell -Command "(New-Object Net.WebClient).DownloadFile('%URL%', 'install.bat')"
     - install.bat
+    - echo %programfiles%
 
 test_script:
+    - echo %programfiles%
     - if NOT exist "%programfiles%\lib\zlib.lib" exit 1
     - if NOT exist "%programfiles%\bin\zlib.dll" exit 1
     - if NOT exist "%programfiles%\include\zconf.h" exit 1
