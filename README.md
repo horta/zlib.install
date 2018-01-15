@@ -1,5 +1,7 @@
 # zlib.install
 
+[![AppVeyor](https://img.shields.io/appveyor/ci/gruntjs/grunt.svg?style=flat-square)](https://ci.appveyor.com/project/Horta/zlib-install)
+
 Windows one-liner installer for zlib library.
 
 # usage
