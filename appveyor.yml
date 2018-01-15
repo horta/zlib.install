@@ -18,8 +18,7 @@ environment:
         BDIR: msvc2015
 
 build_script:
-    - mkdir build.%BDIR%
-    - cd build.%BDIR%
+    - mkdir build.%BDIR% && cd build.%BDIR%
     - set URL=https://raw.githubusercontent.com/horta/zlib.install/master/install.bat
     - powershell -Command "(New-Object Net.WebClient).DownloadFile('%URL%', 'install.bat')"
     - install.bat
