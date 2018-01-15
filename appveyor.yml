@@ -20,3 +20,6 @@ build_script:
     - set URL=https://raw.githubusercontent.com/horta/zlib.install/master/install.bat
     - powershell -Command "(New-Object Net.WebClient).DownloadFile('%URL%', 'install.bat')"
     - install.bat
+
+test_script:
+    - dir %programfiles%\zlib
