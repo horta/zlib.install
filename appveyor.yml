@@ -17,6 +17,6 @@ environment:
 
 build_script:
     - mkdir build && cd build
-    - set URL=https://gist.github.com/horta/18a6bda81f254d6a9f8f61e82101b66b/raw/
-    - powershell -Command "(New-Object Net.WebClient).DownloadFile('%URL%', 'install-zlib.bat')"
+    - set URL=https://raw.githubusercontent.com/horta/zlib.install/master/install.bat
+    - powershell -Command "(New-Object Net.WebClient).DownloadFile('%URL%', 'install.bat')"
     - install.bat
