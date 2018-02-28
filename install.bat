@@ -1,4 +1,10 @@
 @echo off
+SETLOCAL
+
+:: Log file
+SET ORIGIN=%cd%
+call :joinpath "%ORIGIN%" "install.log"
+SET LOG_FILE=%Result%
 
 :: Configuration
 set VERSION=1.2.11
@@ -9,10 +15,6 @@ IF "%ARCH%"=="" set ARCH=x64
 
 echo [0/5] Library(zlib==%VERSION%)
 
-SET ORIGIN=%cd%
-call :joinpath "%ORIGIN%" "install.log"
-SET LOG_FILE=%Result%
-
 :: Cleaning up previous mess
 del /Q %FILE% ! >nul 2>&1
 rd /S /Q %DIR% >nul 2>&1
@@ -21,7 +23,7 @@ copy /y nul %LOG_FILE% >nul 2>&1
 
 echo|set /p="[1/5] Downloading... "
 echo Fetching %URL% >>%LOG_FILE% 2>&1
-powershell -Command "(New-Object Net.WebClient).DownloadFile('%URL%', '%FILE%')" >>%LOG_FILE% 2>&1
+call :winget "%URL%" >>%LOG_FILE% 2>&1
 if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
 echo|set /p="[2/5] Extracting... "
@@ -80,3 +82,33 @@ set NEWSTR=%~2
 set CMD="(gc CMakeLists.txt) -replace '%OLDSTR%', '%NEWSTR%' | Out-File -encoding ASCII CMakeLists.txt"
 powershell -Command %CMD%  >>%LOG_FILE% 2>&1
 goto :eof
+
+:winget    - download file given url
+set URL=%~1
+for %%F in (%URL%) do set FILE=%%~nxF
+
+setlocal EnableDelayedExpansion
+set multiLine=$security_protcols = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::SystemDefault^
+
+if ([Net.SecurityProtocolType].GetMember('Tls11').Count -gt 0) {^
+
+ $security_protcols = $security_protcols -bor [Net.SecurityProtocolType]::Tls11^
+
+}^
+
+if ([Net.SecurityProtocolType].GetMember('Tls12').Count -gt 0) {^
+
+$security_protcols = $security_protcols -bor [Net.SecurityProtocolType]::Tls12^
+
+}^
+
+[Net.ServicePointManager]::SecurityProtocol = $security_protcols^
+
+Write-Host 'Downloading %URL%... ' -NoNewLine^
+
+(New-Object Net.WebClient).DownloadFile('%URL%', '%FILE%')^
+
+Write-Host 'done.'
+
+powershell -Command !multiLine!
+goto:eof
