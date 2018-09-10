@@ -3,11 +3,11 @@ SETLOCAL
 
 :: Log file
 SET ORIGIN=%cd%
-call :joinpath "%ORIGIN%" "install.log"
+call :joinpath "%ORIGIN%" "zlib_install.log"
 SET LOG_FILE=%Result%
 
 :: Configuration
-set VERSION=1.2.11
+set VERSION=1.2.12
 set FILE=zlib-%VERSION%.zip
 set DIR=zlib-%VERSION%
 set URL=https://zlib.net/zlib%VERSION:.=%.zip
