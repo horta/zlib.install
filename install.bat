@@ -50,6 +50,7 @@ set NEWSTR=DESTINATION ""include\""
 call :search_replace "%OLDSTR%" "%NEWSTR%"
 if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
+rd /S /Q build >nul 2>&1
 mkdir build && cd build
 
 echo|set /p="[4/5] Configuring... "
