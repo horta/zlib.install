@@ -1,8 +1,11 @@
 build: off
 shallow_clone: true
+platform: x64
 
 notifications:
   - provider: Email
+    to:
+      - danilo.horta@pm.me
     on_build_success: false
     on_build_failure: true
     on_build_status_changed: false

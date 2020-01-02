@@ -12,6 +12,7 @@ set FILE=zlib-%VERSION%.zip
 set DIR=zlib-%VERSION%
 set URL=https://zlib.net/zlib%VERSION:.=%.zip
 set CMAKE_VS_PLATFORM_NAME=x64
+set CMAKE_VS_PLATFORM_NAME_DEFAULT=x64
 
 echo [0/5] Library(zlib==%VERSION%)
 
