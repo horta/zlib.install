@@ -11,8 +11,10 @@ environment:
     matrix:
       - image: "Visual Studio 2019"
         BDIR: msvc2019
+        CMAKE_GENERATOR: NMake Makefiles
 
 build_script:
+    - echo "%CMAKE_GENERATOR%"
     - mkdir build.%BDIR% && copy install.bat build.%BDIR%\ && cd build.%BDIR%
     - install.bat
     - cd %APPVEYOR_BUILD_FOLDER%
