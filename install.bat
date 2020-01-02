@@ -36,14 +36,17 @@ echo|set /p="[3/5] Fixing CMakeLists.txt... "
 set OLDSTR=RUNTIME DESTINATION ""\${INSTALL_BIN_DIR}\""
 set NEWSTR=RUNTIME DESTINATION ""bin\""
 call :search_replace "%OLDSTR%" "%NEWSTR%"
+if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
 set OLDSTR=ARCHIVE DESTINATION ""\${INSTALL_LIB_DIR}\""
 set NEWSTR=ARCHIVE DESTINATION ""lib\""
 call :search_replace "%OLDSTR%" "%NEWSTR%"
+if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
 set OLDSTR=LIBRARY DESTINATION ""\${INSTALL_LIB_DIR}\""
 set NEWSTR=LIBRARY DESTINATION ""lib\""
 call :search_replace "%OLDSTR%" "%NEWSTR%"
+if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
 set OLDSTR=DESTINATION ""\${INSTALL_INC_DIR}\""
 set NEWSTR=DESTINATION ""include\""
