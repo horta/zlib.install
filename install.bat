@@ -11,7 +11,6 @@ set VERSION=1.2.11
 set FILE=zlib-%VERSION%.zip
 set DIR=zlib-%VERSION%
 set URL=https://zlib.net/zlib%VERSION:.=%.zip
-IF "%CMAKE_GENERATOR_PLATFORM%"=="" set CMAKE_GENERATOR_PLATFORM=x64
 
 echo [0/5] Library(zlib==%VERSION%)
 
