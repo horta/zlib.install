@@ -57,7 +57,7 @@ rd /S /Q build >nul 2>&1
 mkdir build && cd build
 
 echo|set /p="[4/5] Configuring... "
-cmake .. -T="host=x64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%programfiles%\zlib" >>%LOG_FILE% 2>&1
+cmake .. -T"host=x64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%programfiles%\zlib" >>%LOG_FILE% 2>&1
 if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
 echo|set /p="[5/5] Compiling and installing... "
