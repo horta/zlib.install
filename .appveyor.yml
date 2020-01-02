@@ -9,12 +9,18 @@ notifications:
 
 environment:
     matrix:
-      - image: Visual Studio 2019
-        BDIR: msvc2019_nmake
+      - image: Visual Studio 2017
+        BDIR: msvc2017_nmake
         CMAKE_GENERATOR: NMake Makefiles
-      - image: Visual Studio 2019
-        BDIR: msvc2019_vs2019
+      - image: Visual Studio 2017
+        BDIR: msvc2017_vs2017
         CMAKE_GENERATOR: Visual Studio 2019
+
+init:
+  - echo %APPVEYOR_BUILD_WORKER_IMAGE%
+  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" (call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64)
+  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" (call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64)
+  - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat")
 
 build_script:
     - echo "%CMAKE_GENERATOR%"
