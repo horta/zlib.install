@@ -16,8 +16,8 @@ environment:
         CMAKE_GENERATOR: NMake Makefiles
         BDIR: msvc2017_nmake
       - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-        CMAKE_GENERATOR: Visual Studio 2017
-        BDIR: msvc2017_vs2017
+        CMAKE_GENERATOR: Visual Studio 15 2017
+        BDIR: msvc2017_vs15
 
 init:
   - echo %APPVEYOR_BUILD_WORKER_IMAGE%
