@@ -11,6 +11,7 @@ set VERSION=1.2.11
 set FILE=zlib-%VERSION%.zip
 set DIR=zlib-%VERSION%
 set URL=https://zlib.net/zlib%VERSION:.=%.zip
+set CMAKE_GENERATOR_PLATFORM=x64
 
 echo [0/5] Library(zlib==%VERSION%)
 
@@ -56,7 +57,7 @@ rd /S /Q build >nul 2>&1
 mkdir build && cd build
 
 echo|set /p="[4/5] Configuring... "
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%programfiles%\zlib" >>%LOG_FILE% 2>&1
+cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%programfiles%\zlib" >>%LOG_FILE% 2>&1
 if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
 
 echo|set /p="[5/5] Compiling and installing... "
