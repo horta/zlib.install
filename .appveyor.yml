@@ -31,7 +31,7 @@ init:
 build_script:
   - echo "%CMAKE_GENERATOR%"
   - mkdir build.%BDIR% && copy install.bat build.%BDIR%\ && cd build.%BDIR%
-  - install.bat
+  - ./install.bat
   - cd %APPVEYOR_BUILD_FOLDER%
 
 test_script:
