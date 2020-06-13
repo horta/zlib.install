@@ -10,6 +10,9 @@ Windows one-line installer for zlib library.
 powershell -Command "(New-Object Net.WebClient).DownloadFile('https://raw.githubusercontent.com/horta/zlib.install/master/install.bat', 'install.bat')"; ./install.bat
 ```
 
+You might need to open your command prompt as Administrator to be able to install the library
+successfully.
+
 # Requirements
 
 Make sure you have cmake: https://cmake.org/download/
