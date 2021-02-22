@@ -71,9 +71,8 @@ echo|set /p="[5/6] Configuring... "
 "%CMAKE%" .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%PROGRAMFILES%\zlib" >>%LOGFILE% 2>&1
 if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
-echo|set /p="[6/6] Compiling and installing... "
-"%CMAKE%" --build . --config Release --target install >>%LOGFILE% 2>&1
-type %LOGFILE%
+echo [6/6] Compiling and installing...
+"%CMAKE%" --build . --config Release --target install
 if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
 call :cleanup
@@ -125,8 +124,24 @@ systeminfo | findstr /B /C:"OS Name" /C:"OS Version" >>%LOGFILE% 2>&1
 echo[ >>%LOGFILE% 2>&1
 @goto :eof
 
+:cmakefiles_debug
+set F=%BUILD_DIR%/CMakeFiles/CMakeError.log
+if exist %F% (
+    echo -- %F% >>%LOGFILE% 2>&1
+    type %F% >>%LOGFILE% 2>&1
+    echo[ >>%LOGFILE% 2>&1
+)
+set F=%BUILD_DIR%/CMakeFiles/CMakeOutput.log
+if exist %F% (
+    echo -- %F% >>%LOGFILE% 2>&1
+    type %F% >>%LOGFILE% 2>&1
+    echo[ >>%LOGFILE% 2>&1
+)
+@goto :eof
+
 :failed
 echo FAILED.
+call :cmakefiles_debug
 echo[
 echo ---------------------------------------- log begin ----------------------------------------
 type %LOGFILE%
