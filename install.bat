@@ -1,10 +1,10 @@
 @echo off
-SETLOCAL
+setlocal EnableDelayedExpansion
 
 :: Log file
 SET ORIGIN=%cd%
 call :joinpath "%ORIGIN%" "zlib_install.log"
-SET LOG_FILE=%Result%
+SET LOGFILE=%Result%
 
 :: Configuration
 set VERSION=1.2.11
@@ -13,65 +13,99 @@ set DIR=zlib-%VERSION%
 set URL=https://zlib.net/zlib%VERSION:.=%.zip
 set CMAKE_VS_PLATFORM_NAME=x64
 
-echo [0/5] Library(zlib==%VERSION%)
+echo [0/6] Library(zlib==%VERSION%)
 
 :: Cleaning up previous mess
 del /Q %FILE% ! >nul 2>&1
 rd /S /Q %DIR% >nul 2>&1
-del /Q %LOG_FILE% ! >nul 2>&1
-copy /y nul %LOG_FILE% >nul 2>&1
+del /Q %LOGFILE% ! >nul 2>&1
+copy /y nul %LOGFILE% >nul 2>&1
 
-echo|set /p="[1/5] Downloading... "
-echo Fetching %URL% >>%LOG_FILE% 2>&1
-call :winget "%URL%" >>%LOG_FILE% 2>&1
-if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
+echo|set /p="[1/6] Checking cmake... "
+call :setup_cmake_path >>%LOGFILE% 2>&1
+if not defined CMAKE (call :failed && exit /B 1) else (echo done.)
 
-echo|set /p="[2/5] Extracting... "
-powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('%FILE%', '.'); }" >>%LOG_FILE% 2>&1
-if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
+echo|set /p="[2/6] Downloading... "
+echo Fetching %URL% >>%LOGFILE% 2>&1
+call :winget "%URL%" >>%LOGFILE% 2>&1
+if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
+
+echo|set /p="[3/6] Extracting... "
+powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('%FILE%', '.'); }" >>%LOGFILE% 2>&1
+if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
 cd %DIR%
 
-echo|set /p="[3/5] Fixing CMakeLists.txt... "
+echo|set /p="[4/6] Fixing CMakeLists.txt... "
 set OLDSTR=RUNTIME DESTINATION ""\${INSTALL_BIN_DIR}\""
 set NEWSTR=RUNTIME DESTINATION ""bin\""
 call :search_replace "%OLDSTR%" "%NEWSTR%"
-if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1)
+if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1)
 
 set OLDSTR=ARCHIVE DESTINATION ""\${INSTALL_LIB_DIR}\""
 set NEWSTR=ARCHIVE DESTINATION ""lib\""
 call :search_replace "%OLDSTR%" "%NEWSTR%"
-if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1)
+if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1)
 
 set OLDSTR=LIBRARY DESTINATION ""\${INSTALL_LIB_DIR}\""
 set NEWSTR=LIBRARY DESTINATION ""lib\""
 call :search_replace "%OLDSTR%" "%NEWSTR%"
-if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1)
+if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1)
 
 set OLDSTR=DESTINATION ""\${INSTALL_INC_DIR}\""
 set NEWSTR=DESTINATION ""include\""
 call :search_replace "%OLDSTR%" "%NEWSTR%"
-if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
+if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
 rd /S /Q build >nul 2>&1
 mkdir build && cd build
 
-echo|set /p="[4/5] Configuring... "
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%PROGRAMFILES%\zlib" >>%LOG_FILE% 2>&1
-if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
+echo|set /p="[5/6] Configuring... "
+"%CMAKE%" .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%PROGRAMFILES%\zlib" >>%LOGFILE% 2>&1
+if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
-echo|set /p="[5/5] Compiling and installing... "
-cmake --build . --config Release --target install >>%LOG_FILE% 2>&1
-type %LOG_FILE%
-if %ERRORLEVEL% NEQ 0 (echo FAILED. && type %LOG_FILE% && exit /B 1) else (echo done.)
+echo|set /p="[6/6] Compiling and installing... "
+"%CMAKE%" --build . --config Release --target install >>%LOGFILE% 2>&1
+type %LOGFILE%
+if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
 cd %ORIGIN% >nul 2>&1
 del /Q %FILE% >nul 2>&1
 rd /S /Q %DIR% >nul 2>&1
 
-echo Details can be found at %LOG_FILE%.
+echo Details can be found at %LOGFILE%.
 
 @echo on
+@goto :eof
+
+:setup_cmake_path
+cmake.exe /? 2> NUL 1> NUL
+if not %ERRORLEVEL%==9009 (echo cmake.exe is accessible by default. && set CMAKE=cmake.exe)
+if not defined CMAKE (echo cmake.exe is not accessible by default. Looking into common installation dirs.)
+if not defined CMAKE (call :setup_cmake_path_for "%PROGRAMFILES%\CMake\bin")
+if not defined CMAKE (call :setup_cmake_path_for "C:\Program Files\CMake\bin")
+if not defined CMAKE (call :setup_cmake_path_for "C:\Program Files (x86)\CMake\bin")
+@goto :eof
+
+:setup_cmake_path_for
+set DIR_PATH=%~1
+echo|set /p="Checking !DIR_PATH! ... "
+if exist !DIR_PATH!\cmake.exe (
+    echo found.
+    set CMAKE=!DIR_PATH!\cmake.exe
+) else (
+    echo not found.
+)
+@goto :eof
+
+:failed
+echo FAILED.
+echo[
+echo ---------------------------------------- log begin ----------------------------------------
+type %LOGFILE%
+echo ----------------------------------------  log end  ----------------------------------------
+echo[
+echo LOG: %LOGFILE%
 @goto :eof
 
 :joinpath
@@ -84,7 +118,7 @@ goto :eof
 set OLDSTR=%~1
 set NEWSTR=%~2
 set CMD="(gc CMakeLists.txt) -replace '%OLDSTR%', '%NEWSTR%' | Out-File -encoding ASCII CMakeLists.txt"
-powershell -Command %CMD%  >>%LOG_FILE% 2>&1
+powershell -Command %CMD%  >>%LOGFILE% 2>&1
 goto :eof
 
 :winget    - download file given url

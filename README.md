@@ -1,7 +1,5 @@
 # zlib.install
 
-[![AppVeyor](https://img.shields.io/appveyor/ci/Horta/zlib-install.svg?style=flat-square)](https://ci.appveyor.com/project/Horta/zlib-install)
-
 Windows one-line installer for zlib library.
 
 # Usage
