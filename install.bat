@@ -21,14 +21,21 @@ rd /S /Q %DIR% >nul 2>&1
 del /Q %LOGFILE% ! >nul 2>&1
 copy /y nul %LOGFILE% >nul 2>&1
 
-:: System variables
-echo Environment variables: >>%LOGFILE% 2>&1
+echo -- Environment variables >>%LOGFILE% 2>&1
 set >>%LOGFILE% 2>&1
+echo[ >>%LOGFILE% 2>&1
+
+echo -- System info >>%LOGFILE% 2>&1
+systeminfo | findstr /B /C:"OS Name" /C:"OS Version" >>%LOGFILE% 2>&1
 echo[ >>%LOGFILE% 2>&1
 
 echo|set /p="[1/6] Checking cmake... "
 call :setup_cmake_path >>%LOGFILE% 2>&1
-if not defined CMAKE (call :failed && exit /B 1) else (echo done.)
+if not defined CMAKE (
+	call :failed
+	echo "Please, install CMAKE: https://cmake.org/download/"
+	exit /B 1
+) else (echo done.)
 
 echo|set /p="[2/6] Downloading... "
 echo Fetching %URL% >>%LOGFILE% 2>&1
