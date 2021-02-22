@@ -21,6 +21,11 @@ rd /S /Q %DIR% >nul 2>&1
 del /Q %LOGFILE% ! >nul 2>&1
 copy /y nul %LOGFILE% >nul 2>&1
 
+:: System variables
+echo Environment variables: >>%LOGFILE% 2>&1
+set >>%LOGFILE% 2>&1
+echo[ >>%LOGFILE% 2>&1
+
 echo|set /p="[1/6] Checking cmake... "
 call :setup_cmake_path >>%LOGFILE% 2>&1
 if not defined CMAKE (call :failed && exit /B 1) else (echo done.)
