@@ -2,9 +2,8 @@
 setlocal EnableDelayedExpansion
 
 :: Log file
-SET ORIGIN=%cd%
-call :joinpath "%ORIGIN%" "zlib_install.log"
-SET LOGFILE=%Result%
+set ORIGIN=%cd%
+set LOGFILE=%ORIGIN%\zlib_install.log
 
 :: Configuration
 set VERSION=1.2.11
@@ -12,29 +11,25 @@ set FILE=zlib-%VERSION%.zip
 set DIR=zlib-%VERSION%
 set URL=https://zlib.net/zlib%VERSION:.=%.zip
 set CMAKE_VS_PLATFORM_NAME=x64
+set SRC_DIR=%ORIGIN%/%DIR%
+set BUILD_DIR=%SRC_DIR%/build
+
+echo %SRC_DIR%
+echo %BUILD_DIR%
 
 echo [0/6] Library(zlib==%VERSION%)
 
-:: Cleaning up previous mess
-del /Q %FILE% ! >nul 2>&1
-rd /S /Q %DIR% >nul 2>&1
-del /Q %LOGFILE% ! >nul 2>&1
-copy /y nul %LOGFILE% >nul 2>&1
-
-echo -- Environment variables >>%LOGFILE% 2>&1
-set >>%LOGFILE% 2>&1
-echo[ >>%LOGFILE% 2>&1
-
-echo -- System info >>%LOGFILE% 2>&1
-systeminfo | findstr /B /C:"OS Name" /C:"OS Version" >>%LOGFILE% 2>&1
-echo[ >>%LOGFILE% 2>&1
+call :cleanup
+call :cleanup_log
+call :log_sysinfo
 
 echo|set /p="[1/6] Checking cmake... "
 call :setup_cmake_path >>%LOGFILE% 2>&1
 if not defined CMAKE (
-	call :failed
-	echo "Please, install CMAKE: https://cmake.org/download/"
-	exit /B 1
+    call :failed
+    echo[
+    echo Please, install CMAKE: https://cmake.org/download/
+    exit /B 1
 ) else (echo done.)
 
 echo|set /p="[2/6] Downloading... "
@@ -46,7 +41,7 @@ echo|set /p="[3/6] Extracting... "
 powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('%FILE%', '.'); }" >>%LOGFILE% 2>&1
 if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
-cd %DIR%
+cd %SRC_DIR%
 
 echo|set /p="[4/6] Fixing CMakeLists.txt... "
 set OLDSTR=RUNTIME DESTINATION ""\${INSTALL_BIN_DIR}\""
@@ -81,9 +76,7 @@ echo|set /p="[6/6] Compiling and installing... "
 type %LOGFILE%
 if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
-cd %ORIGIN% >nul 2>&1
-del /Q %FILE% >nul 2>&1
-rd /S /Q %DIR% >nul 2>&1
+call :cleanup
 
 echo Details can be found at %LOGFILE%.
 
@@ -110,14 +103,36 @@ if exist !DIR_PATH!\cmake.exe (
 )
 @goto :eof
 
+:cleanup
+cd %ORIGIN% >nul 2>&1
+del /Q %FILE% ! >nul 2>&1
+rd /S /Q %DIR% >nul 2>&1
+@goto :eof
+
+:cleanup_log
+cd %ORIGIN% >nul 2>&1
+del /Q %LOGFILE% ! >nul 2>&1
+copy /y nul %LOGFILE% >nul 2>&1
+@goto :eof
+
+:log_sysinfo
+echo -- Environment variables >>%LOGFILE% 2>&1
+set >>%LOGFILE% 2>&1
+echo[ >>%LOGFILE% 2>&1
+
+echo -- System info >>%LOGFILE% 2>&1
+systeminfo | findstr /B /C:"OS Name" /C:"OS Version" >>%LOGFILE% 2>&1
+echo[ >>%LOGFILE% 2>&1
+@goto :eof
+
 :failed
 echo FAILED.
 echo[
 echo ---------------------------------------- log begin ----------------------------------------
 type %LOGFILE%
 echo ----------------------------------------  log end  ----------------------------------------
-echo[
 echo LOG: %LOGFILE%
+call :cleanup
 @goto :eof
 
 :joinpath
