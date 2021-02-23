@@ -125,17 +125,17 @@ echo[ >>%LOGFILE% 2>&1
 @goto :eof
 
 :cmakefiles_debug
-set F=%BUILD_DIR%/CMakeFiles/CMakeError.log
-if exist %F% (
-    echo -- %F% >>%LOGFILE% 2>&1
-    type %F% >>%LOGFILE% 2>&1
-    echo[ >>%LOGFILE% 2>&1
+set FILE=%BUILD_DIR%\CMakeFiles\CMakeError.log
+if exist %FILE% (
+    echo -- %FILE%
+    type %FILE%
+    echo[
 )
-set F=%BUILD_DIR%/CMakeFiles/CMakeOutput.log
-if exist %F% (
-    echo -- %F% >>%LOGFILE% 2>&1
-    type %F% >>%LOGFILE% 2>&1
-    echo[ >>%LOGFILE% 2>&1
+set FILE=%BUILD_DIR%\CMakeFiles\CMakeOutput.log
+if exist %FILE% (
+    echo -- %FILE%
+    type %FILE%
+    echo[
 )
 @goto :eof
 
