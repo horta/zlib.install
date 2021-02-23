@@ -82,6 +82,7 @@ echo Details can be found at %LOGFILE%.
 @goto :eof
 
 :setup_cmake_path
+where cmake.exe
 cmake.exe /? 2> NUL 1> NUL
 if not %ERRORLEVEL%==9009 (echo cmake.exe is accessible by default. && set CMAKE=cmake.exe)
 if not defined CMAKE (echo cmake.exe is not accessible by default. Looking into common installation dirs.)
@@ -159,7 +160,7 @@ set CMD="(gc CMakeLists.txt) -replace '%OLDSTR%', '%NEWSTR%' | Out-File -encodin
 powershell -Command %CMD%  >>%LOGFILE% 2>&1
 goto :eof
 
-:winget    - download file given url
+:winget
 set URL=%~1
 for %%F in (%URL%) do set FILE=%%~nxF
 
