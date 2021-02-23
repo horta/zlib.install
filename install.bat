@@ -8,7 +8,7 @@ set VERSION=1.2.11
 set VER=%VERSION:.=%
 set URL=https://zlib.net/zlib%VER%.zip
 set CMAKE_VS_PLATFORM_NAME=x64
-set TMPDIR=%HOMEDRIVE%\%HOMEPATH%\zlib_tmp
+set TMPDIR=%HOMEDRIVE%%HOMEPATH%\zlib_tmp
 set SRC_DIR=%TMPDIR%\zlib-%VERSION%
 set ZIPFILE=zlib%VER%.zip
 set ABS_ZIPFILE=%TMPDIR%\%ZIPFILE%
@@ -102,12 +102,12 @@ if exist !DIR_PATH!\cmake.exe (
 @goto :eof
 
 :cleanup_src
-del /Q %ABS_ZIPFILE% ! >nul 2>&1
+del /Q %ABS_ZIPFILE% >nul 2>&1
 rd /S /Q %SRC_DIR% >nul 2>&1
 @goto :eof
 
 :cleanup_log
-del /Q %LOGFILE% ! >nul 2>&1
+del /Q %LOGFILE% >nul 2>&1
 @goto :eof
 
 :log_sysinfo
