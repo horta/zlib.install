@@ -17,7 +17,7 @@ set LOGFILE=%TMPDIR%\zlib_install.log
 
 echo [0/6] Library(zlib==%VERSION%)
 
-if not exist %TMPDIR% (mkdir %TMPDIR% && cd %TMPDIR% || exit /B 1)
+if not exist %TMPDIR% (mkdir %TMPDIR% && cd /d %TMPDIR% || exit /B 1)
 call :cleanup_src
 call :cleanup_log
 copy /y nul %LOGFILE% >nul 2>&1
@@ -34,7 +34,7 @@ if not defined CMAKE (
 
 echo|set /p="[2/6] Downloading... "
 echo Fetching %URL% >>%LOGFILE% 2>&1
-cd %TMPDIR% && call :winget "%URL%" >>%LOGFILE% 2>&1
+cd /d %TMPDIR% && call :winget "%URL%" >>%LOGFILE% 2>&1
 if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
 echo|set /p="[3/6] Extracting... "
@@ -63,7 +63,7 @@ call :search_replace "%OLDSTR%" "%NEWSTR%"
 if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
 rd /S /Q %BUILD_DIR% >nul 2>&1
-mkdir %BUILD_DIR% && cd %BUILD_DIR%
+mkdir %BUILD_DIR% && cd /d %BUILD_DIR%
 
 echo|set /p="[5/6] Configuring... "
 "%CMAKE%" .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%PROGRAMFILES%\zlib" >>%LOGFILE% 2>&1
@@ -149,13 +149,13 @@ call :goto_origin
 @goto :eof
 
 :goto_origin
-cd %ORIGIN% >nul 2>&1
+cd /d %ORIGIN% >nul 2>&1
 @goto :eof
 
 :search_replace
 set OLDSTR=%~1
 set NEWSTR=%~2
-cd %SRC_DIR%
+cd /d %SRC_DIR%
 set CMD="(gc CMakeLists.txt) -replace '%OLDSTR%', '%NEWSTR%' | Out-File -encoding ASCII CMakeLists.txt"
 powershell -Command %CMD%  >>%LOGFILE% 2>&1
 goto :eof
