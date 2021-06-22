@@ -27,7 +27,7 @@ if not defined ARCH (
     set ARCH=x64
 )
 set GENERATOR=-DCMAKE_GENERATOR_PLATFORM=%ARCH%
-if %ARCH% EQ x64 (
+if "%ARCH%" == "x64" (
     set PREFIX=-DCMAKE_INSTALL_PREFIX="%PROGRAMFILES%\zlib"
 ) else (
     set PREFIX=-DCMAKE_INSTALL_PREFIX="%PROGRAMFILES(X86)%\zlib"
