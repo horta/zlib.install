@@ -4,7 +4,7 @@ setlocal EnableDelayedExpansion
 set ORIGIN=%cd%
 
 :: Configuration
-set VERSION=1.2.11
+set VERSION=1.2.12
 set VER=%VERSION:.=%
 set URL=https://zlib.net/zlib%VER%.zip
 set CMAKE_VS_PLATFORM_NAME=x64
