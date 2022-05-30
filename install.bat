@@ -26,7 +26,10 @@ call :log_sysinfo >>%LOGFILE% 2>&1
 if not defined ARCH (
     set ARCH=x64
 )
-set GENERATOR=-DCMAKE_GENERATOR_PLATFORM=%ARCH%
+if not defined CMAKE_GENERATOR_PLATFORM (
+    set CMAKE_GENERATOR_PLATFORM=%ARCH%
+)
+set GENERATOR_PLATFORM_ARG=-DCMAKE_GENERATOR_PLATFORM:STRING="%CMAKE_GENERATOR_PLATFORM%"
 if "%ARCH%" == "x64" (
     set PREFIX=-DCMAKE_INSTALL_PREFIX="%PROGRAMFILES%\zlib"
 ) else (
@@ -76,7 +79,7 @@ rd /S /Q %BUILD_DIR% >nul 2>&1
 mkdir %BUILD_DIR% && cd /d %BUILD_DIR%
 
 echo|set /p="[5/6] Configuring... "
-"%CMAKE%" .. -DCMAKE_BUILD_TYPE=Release %PREFIX% %GENERATOR% >>%LOGFILE% 2>&1
+"%CMAKE%" .. -DCMAKE_BUILD_TYPE=Release %PREFIX% %GENERATOR_PLATFORM_ARG% >>%LOGFILE% 2>&1
 if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
 echo [6/6] Compiling and installing...
