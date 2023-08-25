@@ -26,3 +26,11 @@ powershell -Command "(Invoke-WebRequest -Uri https://git.io/JnHTY -OutFile insta
 
 The video https://www.youtube.com/watch?v=IsAoIqnNia4 presents a step-by-step tutorial
 on how to install Visual Studio with support for C++.
+
+# Uninstall
+
+Open your command prompt as Administrator and enter
+
+```
+rd /s /q "%PROGRAMFILES%"\zlib
+```
