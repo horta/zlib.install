@@ -17,11 +17,11 @@ set LOGFILE=%TMPDIR%\zlib_install.log
 
 echo [0/6] Library(zlib==%VERSION%)
 
-if not exist %TMPDIR% (mkdir %TMPDIR% && cd /d %TMPDIR% || exit /B 1)
+if not exist "%TMPDIR%" (mkdir "%TMPDIR%" && cd /d "%TMPDIR%" || exit /B 1)
 call :cleanup_src
 call :cleanup_log
-copy /y nul %LOGFILE% >nul 2>&1
-call :log_sysinfo >>%LOGFILE% 2>&1
+copy /y nul "%LOGFILE%" >nul 2>&1
+call :log_sysinfo >>"%LOGFILE%" 2>&1
 
 if not defined ARCH (
     set ARCH=x64
@@ -37,7 +37,7 @@ if "%ARCH%" == "x64" (
 )
 
 echo|set /p="[1/6] Checking cmake... "
-call :setup_cmake_path >>%LOGFILE% 2>&1
+call :setup_cmake_path >>"%LOGFILE%" 2>&1
 if not defined CMAKE (
     call :failed
     echo[
@@ -46,12 +46,12 @@ if not defined CMAKE (
 ) else (echo done.)
 
 echo|set /p="[2/6] Downloading... "
-echo Fetching %URL% >>%LOGFILE% 2>&1
-cd /d %TMPDIR% && call :winget "%URL%" >>%LOGFILE% 2>&1
+echo Fetching %URL% >>"%LOGFILE%" 2>&1
+cd /d "%TMPDIR%" && call :winget "%URL%" >>"%LOGFILE%" 2>&1
 if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
 echo|set /p="[3/6] Extracting... "
-powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('%ABS_ZIPFILE%', '%TMPDIR%'); }" >>%LOGFILE% 2>&1
+powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('%ABS_ZIPFILE%', '%TMPDIR%'); }" >>"%LOGFILE%" 2>&1
 if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
 echo|set /p="[4/6] Fixing CMakeLists.txt... "
@@ -75,11 +75,11 @@ set NEWSTR=DESTINATION ""include\""
 call :search_replace "%OLDSTR%" "%NEWSTR%"
 if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
-rd /S /Q %BUILD_DIR% >nul 2>&1
-mkdir %BUILD_DIR% && cd /d %BUILD_DIR%
+rd /S /Q "%BUILD_DIR%" >nul 2>&1
+mkdir "%BUILD_DIR%" && cd /d "%BUILD_DIR%"
 
 echo|set /p="[5/6] Configuring... "
-"%CMAKE%" .. -DCMAKE_BUILD_TYPE=Release %PREFIX% %GENERATOR_PLATFORM_ARG% >>%LOGFILE% 2>&1
+"%CMAKE%" .. -DCMAKE_BUILD_TYPE=Release %PREFIX% %GENERATOR_PLATFORM_ARG% >>"%LOGFILE%" 2>&1
 if %ERRORLEVEL% NEQ 0 (call :failed && exit /B 1) else (echo done.)
 
 echo [6/6] Compiling and installing...
@@ -116,12 +116,12 @@ if exist !DIR_PATH!\cmake.exe (
 @goto :eof
 
 :cleanup_src
-del /Q %ABS_ZIPFILE% >nul 2>&1
-rd /S /Q %SRC_DIR% >nul 2>&1
+del /Q "%ABS_ZIPFILE%" >nul 2>&1
+rd /S /Q "%SRC_DIR%" >nul 2>&1
 @goto :eof
 
 :cleanup_log
-del /Q %LOGFILE% >nul 2>&1
+del /Q "%LOGFILE%" >nul 2>&1
 @goto :eof
 
 :log_sysinfo
@@ -136,25 +136,25 @@ echo[
 
 :cmakefiles_debug
 set FILE=%BUILD_DIR%\CMakeFiles\CMakeError.log
-if exist %FILE% (
+if exist "%FILE%" (
     echo -- %FILE%
-    type %FILE%
+    type "%FILE%"
     echo[
 )
 set FILE=%BUILD_DIR%\CMakeFiles\CMakeOutput.log
-if exist %FILE% (
+if exist "%FILE%" (
     echo -- %FILE%
-    type %FILE%
+    type "%FILE%"
     echo[
 )
 @goto :eof
 
 :failed
 echo FAILED.
-call :cmakefiles_debug >>%LOGFILE% 2>&1
+call :cmakefiles_debug >>"%LOGFILE%" 2>&1
 echo[
 echo ---------------------------------------- log begin ----------------------------------------
-type %LOGFILE%
+type "%LOGFILE%"
 echo ----------------------------------------  log end  ----------------------------------------
 echo LOG: %LOGFILE%
 call :cleanup_src
@@ -168,9 +168,9 @@ cd /d %ORIGIN% >nul 2>&1
 :search_replace
 set OLDSTR=%~1
 set NEWSTR=%~2
-cd /d %SRC_DIR%
+cd /d "%SRC_DIR%"
 set CMD="(gc CMakeLists.txt) -replace '%OLDSTR%', '%NEWSTR%' | Out-File -encoding ASCII CMakeLists.txt"
-powershell -Command %CMD%  >>%LOGFILE% 2>&1
+powershell -Command %CMD%  >>"%LOGFILE%" 2>&1
 goto :eof
 
 :winget
