@@ -29,8 +29,11 @@ on how to install Visual Studio with support for C++.
 
 # Uninstall
 
+**!! BE CAREFUL! MAKE SURE YOU UNDERSTAND IT. !!**
+
 Open your command prompt as Administrator and enter
 
 ```
 rd /s /q "%PROGRAMFILES%"\zlib
+rd /s /q "%PROGRAMFILES(X86)%\zlib"
 ```
